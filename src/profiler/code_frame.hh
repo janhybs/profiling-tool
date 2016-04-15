@@ -1,15 +1,16 @@
-#ifndef TIME_FRAME_HH
-#define TIME_FRAME_HH
+#ifndef CODE_FRAME_HH
+#define CODE_FRAME_HH
 
 
 #include <vector>
 #include <string>
 #include <iterator>
 #include <iostream>
-#include <algorithm>
+#include <memory>
 #include <array>
 
 #include "code_point.hh"
+#include "counters/performance_counter_base.hh"
 
 using namespace std;
 
@@ -22,16 +23,23 @@ namespace profiler {
 
 // #define START_TIMER(tag) static constexpr profiler::CodePoint PASTE(cp_,__LINE__) = CODE_POINT(tag); profiler::TimeFrame PASTE(timer_,__LINE__) = profiler::TimeFrame(PASTE(cp_,__LINE__));
 
-#define START_TIMER_(tag) profiler::TimeFrame(CODE_POINT(tag));
-#define START_TIMER(tag) static profiler::TimeFrame PASTE(timer_,__LINE__) = START_TIMER_(tag);
+#define START_TIMER_(tag) profiler::CodeFrame(CODE_POINT(tag));
+#define START_TIMER(tag) static profiler::CodeFrame PASTE(timer_,__LINE__) = START_TIMER_(tag);
 
 
-class TimeFrame {
+class CodeFrame {
 public:
-    TimeFrame(const profiler::CodePoint &cp);
+    CodeFrame(const profiler::CodePoint &cp);
     
-    ~TimeFrame();
+    ~CodeFrame();
     
+    
+    vector<shared_ptr<PerformanceCounterBase>> counters;
+    
+    /**
+     * indicating whether is this code frame still measuring (is active)
+     * @return true if it is active
+     */
     inline bool is_running() {
         return is_running_;
     };
@@ -63,17 +71,27 @@ public:
     void resume();
     
 protected:
+    /**
+     * reference to const CodePoint
+     */
     const profiler::CodePoint & code_point_;
+    
+    /**
+     * index of this code_frame in Profiler's code_frames_ vector
+     */
     const size_t index_;
     
+    /**
+     * bool indicating this code frame is still measuring (is active)
+     */
     bool is_running_;
     
     
     /**
      * define stream << operator
      */
-    friend std::ostream & operator <<(std::ostream&, const TimeFrame&);
+    friend std::ostream & operator <<(std::ostream&, const CodeFrame&);
 };
 
 } // namespace profiler
-#endif  // TIME_FRAME_HH
+#endif  // CODE_FRAME_HH
