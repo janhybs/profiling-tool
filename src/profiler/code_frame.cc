@@ -18,6 +18,8 @@ CodeFrame::~CodeFrame() {
 };
 
 void CodeFrame::start() {
+    if (is_running_) return;
+    
     is_running_ = true;
     for(auto &counter : counters) {
         counter->on_start();
@@ -25,9 +27,12 @@ void CodeFrame::start() {
 }
 
 bool CodeFrame::stop(bool forced) {
+    if (!is_running_) return false;
+    
     is_running_ = false;
     for(auto &counter : counters) {
         counter->on_stop();
+        cout << counter->get_result()["duration"].d << endl;
     }
     return false;
 }

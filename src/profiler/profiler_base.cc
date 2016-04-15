@@ -11,9 +11,9 @@ Profiler * Profiler::instance() {
 }
 
 
-size_t Profiler::insert_time_frame(TimeFrame & tf) {
-    timers_.push_back(tf);
-    return timers_.size() - 1;
+size_t Profiler::push_code_frame(CodeFrame & tf) {
+    code_frames_.push_back(tf);
+    return code_frames_.size() - 1;
 }
 
 } // namespace profiler
