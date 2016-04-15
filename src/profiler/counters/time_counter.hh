@@ -17,12 +17,11 @@ public:
     
     void on_start();
     void on_stop();
+    unordered_map<string, profiler::Number> get_result ();
     
-    
+    // no need to override since time is continuous
     inline void on_pause() {};
     inline void on_resume() {};
-    
-    unordered_map<string, profiler::Number> get_result ();
     
 protected:
     
